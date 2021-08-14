@@ -93,7 +93,7 @@ def size(num, suffix='B'):
         num /= 1024.0
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
-def generate(site, tunasync, info, _options, _cname, disk = {}):
+def generate(site, tunasync, info, _options, _cname, disk = {}, endpoints = {}):
     global options
     global cname
     options = _options
@@ -104,6 +104,10 @@ def generate(site, tunasync, info, _options, _cname, disk = {}):
     if "used_kb" in disk:
         mirrorz["site"]["disk"] = size(disk["used_kb"]) + " / " + size(disk["total_kb"])
 
+    if endpoints:
+        mirrorz["endpoints"] = endpoints
+        mirrorz["extension"] = "D"
+        
     mirrorz["info"] = []
     for inf in info:
         mirrorz["info"].append({
