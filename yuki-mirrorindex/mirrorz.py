@@ -100,9 +100,9 @@ def main():
     global options
     global cname
     if len(sys.argv) < 7:
-        print("help: mirrorz.py site.json meta_url genisolist_prog gencontent_prog options.json cname.json output.json")
+        print("help: mirrorz.py base.json meta_url genisolist_prog gencontent_prog options.json cname.json output.json")
         sys.exit(0)
-    site = json.loads(open(sys.argv[1]).read())
+    base = json.loads(open(sys.argv[1]).read())
     meta = requests.get(sys.argv[2]).json()
     isolist = json.loads(subprocess.check_output(
         sys.argv[3], stderr=subprocess.DEVNULL).decode('utf-8'))
@@ -115,12 +115,11 @@ def main():
     cname = json.loads(open(sys.argv[6]).read())
     output = sys.argv[7]
 
-    disk_info(site)
+    disk_info(base["site"])
     iso(isolist)
     mirrors = parse_content_meta(content_txt, meta)
 
-    mirrorz = {}
-    mirrorz["site"] = site
+    mirrorz = base
     mirrorz["info"] = isolist
     mirrorz["mirrors"] = mirrors
 
