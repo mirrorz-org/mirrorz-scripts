@@ -6,7 +6,7 @@ import re
 import sys
 
 
-content_regex = re.compile(r"\('(.+)', '(.*)', '(.*)', '(.+)'\)")
+content_regex = re.compile(r"\('(.*)', '(.*)', '(.*)', '(.+)'\)")
 options = {}
 cname = {}
 
@@ -105,7 +105,9 @@ def main():
     base = json.loads(open(sys.argv[1]).read())
     meta = requests.get(sys.argv[2]).json()
     isolist = json.loads(subprocess.check_output(
-        sys.argv[3], stderr=subprocess.DEVNULL).decode('utf-8'))
+        [sys.argv[3], "--images"], stderr=subprocess.DEVNULL).decode('utf-8'))
+    applist = json.loads(subprocess.check_output(
+        [sys.argv[3], "--apps"], stderr=subprocess.DEVNULL).decode('utf-8'))
     content_txt = subprocess.check_output(
         sys.argv[4], stderr=subprocess.DEVNULL).decode('utf-8')
     # meta = json.loads(open(sys.argv[2]).read())
@@ -115,12 +117,16 @@ def main():
     cname = json.loads(open(sys.argv[6]).read())
     output = sys.argv[7]
 
+    for i in applist:
+        i["category"] = "app"
+
     disk_info(base["site"])
     iso(isolist)
+    iso(applist)
     mirrors = parse_content_meta(content_txt, meta)
 
     mirrorz = base
-    mirrorz["info"] = isolist
+    mirrorz["info"] = isolist + applist
     mirrorz["mirrors"] = mirrors
 
     with open(output, "w") as f:
